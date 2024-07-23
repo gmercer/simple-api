@@ -1,5 +1,3 @@
-create schema api;
-
 -- see https://web.archive.org/web/20240718080538/https://www.koyeb.com/tutorials/using-spring-authorization-server-as-an-auth-solution-on-koyeb
 -- auth-koyeb/auth-server/src/main/resources/schema.sql
 
