@@ -25,3 +25,6 @@ replay_pid*
 
 # build artifacts
 target/*
+
+# JetBrains config
+.idea/*
