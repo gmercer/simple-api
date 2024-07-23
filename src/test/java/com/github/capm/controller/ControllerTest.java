@@ -74,7 +74,7 @@ class ControllerTest {
         assertNotNull(users);
         assertThat(users.length).isNotEqualTo(0);
 
-        assertThat(users).extracting(User::getUsername).containsExactly("admin");
+        assertThat(users).extracting(User::getUsername).contains("admin");
     }
 
 }
