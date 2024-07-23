@@ -10,4 +10,5 @@ public interface GroupDao {
 
     Group getGroupById(int id);
 
+    List<Group> findAllGroups();
 }

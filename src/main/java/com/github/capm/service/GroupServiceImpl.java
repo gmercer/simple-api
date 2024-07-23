@@ -20,4 +20,9 @@ public class GroupServiceImpl implements GroupService {
     public Group getGroupById(int id) {
         return null;
     }
+
+    @Override
+    public List<Group> findAllGroups() {
+        return groupDao.findAllGroups();
+    }
 }

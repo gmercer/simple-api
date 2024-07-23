@@ -1,10 +1,8 @@
 package com.github.capm.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -26,7 +24,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        new RegexRequestMatcher("/users/*", null),
+                        new RegexRequestMatcher("/auth/*", null),
                         new RegexRequestMatcher("/compass-api/*", null)
                         ).permitAll()
                 .anyRequest().authenticated()
