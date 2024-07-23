@@ -1,0 +1,57 @@
+name: Java Postgres CI
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - closed
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Start PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+      - name: Create junit user
+        run: |
+          sudo -u postgres psql --command="CREATE USER junit_user PASSWORD 'junit_password'"
+      - name: Create junit database
+        run: |
+          sudo -u postgres createdb --owner=junit_user junit_database
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: release_version
+        run: |
+          last_tag=$( git -C ${{ github.workspace }} describe --abbrev=0 --tags )
+          next_tag=$( echo ${last_tag} | awk -F. '{ print $1"."$2"."($3 + 1) }' )
+          echo tag_name=$( echo ${next_tag} ) >> ${GITHUB_ENV}    
+          echo tag_num=$( echo ${next_tag} | sed 's/[A-z]//g' ) >> ${GITHUB_ENV}
+      - name: Build with Maven
+        run: mvn -Drevision=${{ env.tag_num }} -B clean package
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '**/*.war'
+          tag_name: '${{ env.tag_name }}'
+        if: startsWith(github.head_ref, 'releases/')
+
+  ignore:
+    if: github.event.pull_request.merged != true
+    name: Ignoring closed pull request without merge
+    runs-on: ubuntu-latest
+    steps:
+      - run : echo "Ignoring closed PR because it was not merged"
