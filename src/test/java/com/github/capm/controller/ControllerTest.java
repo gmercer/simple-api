@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.ResponseEntity;
 
+import java.time.Duration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -132,7 +136,6 @@ class ControllerTest {
 
     @Test
     public void createGroup() throws Exception {
-
         ResponseEntity<GrantedAuthority[]> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
@@ -142,6 +145,7 @@ class ControllerTest {
         assertNotNull(auths);
         assertThat(auths).isNotEmpty();
         assertThat(auths).extracting(GrantedAuthority::getAuthority).contains("ROLE_AVENGER");
+
     }
 
 
