@@ -63,10 +63,10 @@ import java.util.regex.Pattern;
 public class RelativeDateTimeParser
 {
     private static final Pattern inputPattern = Pattern.compile(
-            "^\\[[nN][oO][wW]\\s*(([-+][0-9]+[yMdhms]\\s*)*)([0-9:]*)?\\]$");
+            "^\\[[nN][oO][wW]\\s*(([-+][0-9]+[yMwdhms]\\s*)*)([0-9:]*)?\\]$");
     private static final int GROUP_DIFFS = 1;
     private static final int GROUP_TIME = 3;
-    public static final String DIFF_REGEX = "([+-][0-9]+[yMdhms])";
+    public static final String DIFF_REGEX = "([+-][0-9]+[yMwdhms])";
     private static final Pattern diffPattern =
             Pattern.compile(DIFF_REGEX);
     public static final String NOW_REGEX = "([nN][oO][wW])";
@@ -163,25 +163,25 @@ public class RelativeDateTimeParser
         }
     }
 
-    private static TemporalUnit resolveUnit(char c)
-    {
-        switch (c)
-        {
-        case 'y':
-            return ChronoUnit.YEARS;
-        case 'M':
-            return ChronoUnit.MONTHS;
-        case 'd':
-            return ChronoUnit.DAYS;
-        case 'h':
-            return ChronoUnit.HOURS;
-        case 'm':
-            return ChronoUnit.MINUTES;
-        case 's':
-            return ChronoUnit.SECONDS;
-        default:
-            throw new IllegalArgumentException("'" + c
-                    + "' is not a valid unit. It has to be one of 'yMdhms'.");
+    private static TemporalUnit resolveUnit(char c) {
+        switch (c) {
+            case 'y':
+                return ChronoUnit.YEARS;
+            case 'M':
+                return ChronoUnit.MONTHS;
+            case 'w':
+                return ChronoUnit.WEEKS;
+            case 'd':
+                return ChronoUnit.DAYS;
+            case 'h':
+                return ChronoUnit.HOURS;
+            case 'm':
+                return ChronoUnit.MINUTES;
+            case 's':
+                return ChronoUnit.SECONDS;
+            default:
+                throw new IllegalArgumentException("'" + c
+                        + "' is not a valid unit. It has to be one of 'yMdhms'.");
         }
     }
 

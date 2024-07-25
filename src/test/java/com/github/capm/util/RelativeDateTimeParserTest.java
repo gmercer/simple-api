@@ -1,5 +1,7 @@
 package com.github.capm.util;
 
+import com.github.sisyphsu.dateparser.DateParser;
+import com.github.sisyphsu.dateparser.DateParserUtils;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -7,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,13 +74,44 @@ class RelativeDateTimeParserTest {
         assertEquals(expected, actual);
     }
 
-
-
     @Test
-    void getClock() {
+    void parseFallback() {
+        Instant instant = Instant.now();
+        Clock clock = Clock.fixed(instant, ZoneId.systemDefault()) ;
+        RelativeDateTimeParser parser = new RelativeDateTimeParser(clock);
+        String testString = "-1d" ;
+        LocalDateTime actual = null;
+        DateParser dateParser = DateParser.newBuilder().build();
+        boolean relativeUsed = false;
+        try {
+            actual = dateParser.parseDateTime(testString) ;
+        } catch (DateTimeParseException e) {
+            relativeUsed = true;
+            actual = parser.asDateTime(testString) ;
+        }
+        LocalDateTime expected = LocalDateTime.ofInstant(instant.minus(Period.ofDays(1)),ZoneId.systemDefault());
+        assertEquals(expected, actual);
+        assertTrue(relativeUsed);
     }
 
     @Test
-    void setClock() {
+    void parseNoFallback() {
+        Instant instant = Instant.now();
+        Clock clock = Clock.fixed(instant, ZoneId.systemDefault()) ;
+        RelativeDateTimeParser parser = new RelativeDateTimeParser(clock);
+        String testString = instant.minus(Period.ofDays(1)).toString(); 
+        LocalDateTime actual = null;
+        DateParser dateParser = DateParser.newBuilder().build();
+        boolean relativeUsed = false;
+        try {
+            actual = dateParser.parseDateTime(testString) ;
+        } catch (DateTimeParseException e) {
+            relativeUsed = true;
+            actual = parser.asDateTime(testString) ;
+        }
+        LocalDateTime expected = LocalDateTime.ofInstant(instant.minus(Period.ofDays(1)),ZoneId.systemDefault());
+        assertEquals(expected, actual);
+        assertFalse(relativeUsed);
     }
+
 }
