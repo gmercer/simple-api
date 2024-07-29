@@ -11,7 +11,11 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.util.UriUtils;
 
+import java.net.URLEncoder;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +23,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = CompassApiApplication.class)
 class ControllerTest {
@@ -150,15 +155,17 @@ class ControllerTest {
 
     @Test
     public void createUser() throws Exception {
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         ResponseEntity<User> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/users/create/" + "capman:secret", User.class)
+                        .getForEntity("/auth/users/create/" + "capman:testpass", User.class)
                 ;
         User user = response.getBody();
         assertNotNull(user);
         assertThat(user.getUsername()).isEqualTo("capman");
-        assertThat(user.getPassword()).isNotEqualTo("secret");
+        assertThat(user.getPassword()).isNotEqualTo("testpass");
+        assertTrue(encoder.matches("testpass", user.getPassword()));
     }
 
 }
