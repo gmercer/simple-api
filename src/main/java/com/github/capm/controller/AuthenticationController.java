@@ -58,6 +58,7 @@ public class AuthenticationController {
                 org.springframework.security.core.userdetails.User.builder()
                         .username(userName)
                         .password(password)
+                        .roles("ROLE_USER")
                         .build()
         );
         addUserToGroup("USERS", userName);

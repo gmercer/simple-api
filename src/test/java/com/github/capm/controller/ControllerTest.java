@@ -148,6 +148,18 @@ class ControllerTest {
 
     }
 
+    @Test
+    public void createUser() throws Exception {
+        ResponseEntity<User> response =
+                template
+                        .withBasicAuth(USERNAME, PASSWORD)
+                        .getForEntity("/auth/users/create/" + "capman:secret", User.class)
+                ;
+        User user = response.getBody();
+        assertNotNull(user);
+        assertThat(user.getUsername()).isEqualTo("capman");
+        assertThat(user.getPassword()).isNotEqualTo("secret");
+    }
 
 }
 

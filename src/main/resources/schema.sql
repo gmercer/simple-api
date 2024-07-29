@@ -42,6 +42,25 @@ create table if not exists  group_members (
     constraint fk_group_members_group foreign key(group_id) references groups(id)
     );
 
+
+CREATE OR REPLACE FUNCTION data_of(_tbl_type anyelement, _type text, _name text, _start text, _end text)
+    RETURNS SETOF anyelement
+    LANGUAGE plpgsql AS
+$func$
+BEGIN
+    -- RAISE NOTICE E'HELLO $1 = "%"', _start -- (parse_ident(_tbl_type::text))[2]
+    RETURN QUERY EXECUTE format('
+      SELECT t.*
+      FROM   capm.objects o,
+             %s  t
+      WHERE  o.name = $3
+            and o.type = $2 and t.id = o.id and t.ts BETWEEN $4 and $5 '
+        , pg_typeof(_tbl_type))
+        USING  (parse_ident(_tbl_type::text))[2], _type, _name, _start::timestamp, _end::timestamp;
+    -- RAISE NOTICE E'HELLO $1 = "%"', _start -- (parse_ident(_tbl_type::text))[2]
+END
+$func$;
+
 -- DROPPING THE API WITH CASCADE takes out tables too
 -- drop schema api cascade ;
 -- drop table users cascade ;
