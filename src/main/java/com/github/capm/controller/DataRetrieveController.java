@@ -20,6 +20,10 @@ public class DataRetrieveController {
 
     private DataManager dataManager;
 
+    public DataRetrieveController(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+
     @GetMapping("/{type}/{name}")
     List<String> getDataByNameAndType(
             @PathVariable String type,
@@ -45,9 +49,9 @@ public class DataRetrieveController {
 
             String endText = end.orElseGet(nowFunc);
             try {
-                endTime = dateParser.parseDateTime(startText);
+                endTime = dateParser.parseDateTime(endText);
             } catch (DateTimeParseException e) {
-                endTime = relativeDateTimeParser.asDateTime(startText);
+                endTime = relativeDateTimeParser.asDateTime(endText);
             }
         } catch (IllegalArgumentException e) {
             // need to return 400 Bad Request and the reason why ?
