@@ -8,6 +8,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,11 +56,14 @@ public class AuthenticationController {
             @PathVariable String userName,
             @PathVariable String password
     ) {
+        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
         userDetailsManager.createUser(
                 org.springframework.security.core.userdetails.User.builder()
                         .username(userName)
                         .password(password)
-                        .roles("ROLE_USER")
+                        .roles("USER")
+                        .passwordEncoder(encoder::encode)
                         .build()
         );
         addUserToGroup("USERS", userName);
