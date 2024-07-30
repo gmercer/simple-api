@@ -2,12 +2,10 @@ package com.github.capm.dao;
 
 import com.github.capm.entity.Group;
 import com.github.capm.mapper.GroupRowMapper;
-import com.github.capm.mapper.UserRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -40,6 +38,6 @@ public class GroupDaoImpl implements GroupDao {
 
     @Override
     public List<Group> findAllGroups() {
-           return template.query("select * from groups", new GroupRowMapper());
+        return template.query("select * from groups", new GroupRowMapper());
     }
 }

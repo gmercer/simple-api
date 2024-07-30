@@ -13,7 +13,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<Group> getGroupByName(String groupName) {
-        return  groupDao.getGroupByName(groupName);
+        return groupDao.getGroupByName(groupName);
     }
 
     @Override
