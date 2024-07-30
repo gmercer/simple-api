@@ -36,7 +36,7 @@ class ControllerTest {
         ResponseEntity<Greeting> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/compass-api/greeting", Greeting.class);
+                        .getForEntity("/greetings/greeting", Greeting.class);
         Greeting greeting = response.getBody();
         assertNotNull(greeting);
         assertThat(greeting.getContent()).isEqualTo("Hello, World!");
