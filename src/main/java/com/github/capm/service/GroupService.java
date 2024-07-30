@@ -1,7 +1,6 @@
 package com.github.capm.service;
 
 import com.github.capm.entity.Group;
-import com.github.capm.entity.User;
 
 import java.util.List;
 

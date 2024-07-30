@@ -42,7 +42,7 @@ public class AuthenticationController {
 
     @GetMapping("/users")
     public List<UserDetails> getUsers() {
-        return userDetailsManager.getJdbcTemplate().query("select * from users",  new UserDetailRowMapper());
+        return userDetailsManager.getJdbcTemplate().query("select * from users", new UserDetailRowMapper());
     }
 
 
@@ -74,6 +74,7 @@ public class AuthenticationController {
     List<String> findAllGroups() {
         return userDetailsManager.findAllGroups();
     }
+
     @GetMapping("/groups/{groupName}/users")
     List<String> getUsersInGroup(@PathVariable String groupName) {
         return userDetailsManager.findUsersInGroup(GROUP_PREFIX + groupName);
@@ -81,7 +82,7 @@ public class AuthenticationController {
 
     @GetMapping("/groups/{groupName}/authorities")
     List<GrantedAuthority> getGroupAuthorities(@PathVariable String groupName) {
-        return userDetailsManager.findGroupAuthorities(GROUP_PREFIX +groupName);
+        return userDetailsManager.findGroupAuthorities(GROUP_PREFIX + groupName);
     }
 
     @GetMapping("/groups/create/{groupName}:{role}")

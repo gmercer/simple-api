@@ -60,8 +60,7 @@ import java.util.regex.Pattern;
  * <li><code>[now+1d 10:00]</code> : 10 o'clock tomorrow.</li>
  * </ul>
  */
-public class RelativeDateTimeParser
-{
+public class RelativeDateTimeParser {
     private static final Pattern inputPattern = Pattern.compile(
             "^\\[[nN][oO][wW]\\s*(([-+][0-9]+[yMwdhms]\\s*)*)([0-9:]*)?\\]$");
     private static final int GROUP_DIFFS = 1;
@@ -76,39 +75,34 @@ public class RelativeDateTimeParser
     private Clock clock;
     private LocalDateTime now;
 
-    public RelativeDateTimeParser()
-    {
+    public RelativeDateTimeParser() {
         // Use fixed clock to provide consistent 'now' values.
         this(Clock.fixed(Instant.now(), ZoneId.systemDefault()));
     }
 
-    public RelativeDateTimeParser(Clock clock)
-    {
+    public RelativeDateTimeParser(Clock clock) {
         this.clock = clock;
         cacheLocalDateTime(clock);
     }
 
     public LocalDateTime asDateTime(String text) {
-        LocalDateTime fromTime ;
+        LocalDateTime fromTime;
         if (text.matches(NOW_REGEX)) {
-            fromTime = now ;
+            fromTime = now;
         } else {
             fromTime = diffDateTime(text, now);
         }
         return fromTime;
     }
 
-    public LocalDateTime parse(String input)
-    {
-        if (input == null || input.isEmpty())
-        {
+    public LocalDateTime parse(String input) {
+        if (input == null || input.isEmpty()) {
             throw new IllegalArgumentException(
                     "Relative datetime input must not be null or empty.");
         }
 
         Matcher matcher = inputPattern.matcher(input);
-        if (!matcher.matches())
-        {
+        if (!matcher.matches()) {
             throw new IllegalArgumentException("'" + input
                     + "' does not match the expected pattern [now{diff}{time}]. "
                     + "Please see the data types documentation for the details. "
@@ -118,14 +112,12 @@ public class RelativeDateTimeParser
         LocalDateTime datetime = initLocalDateTime(matcher.group(GROUP_TIME));
 
         String diffStr = matcher.group(GROUP_DIFFS);
-        if (diffStr.isEmpty())
-        {
+        if (diffStr.isEmpty()) {
             return datetime;
         }
 
         Matcher diffMatcher = diffPattern.matcher(diffStr);
-        while (diffMatcher.find())
-        {
+        while (diffMatcher.find()) {
             String diff = diffMatcher.group();
             datetime = diffDateTime(diff, datetime);
         }
@@ -140,24 +132,19 @@ public class RelativeDateTimeParser
         return datetime;
     }
 
-    public Clock getClock()
-    {
+    public Clock getClock() {
         return clock;
     }
 
-    public void setClock(Clock clock)
-    {
+    public void setClock(Clock clock) {
         this.clock = clock;
         cacheLocalDateTime(clock);
     }
 
-    private LocalDateTime initLocalDateTime(String  timeStr)
-    {
-        if (timeStr.isEmpty())
-        {
+    private LocalDateTime initLocalDateTime(String timeStr) {
+        if (timeStr.isEmpty()) {
             return now;
-        } else
-        {
+        } else {
             LocalTime time = LocalTime.parse(timeStr);
             return LocalDateTime.of(now.toLocalDate(), time);
         }
@@ -185,8 +172,7 @@ public class RelativeDateTimeParser
         }
     }
 
-    private void cacheLocalDateTime(Clock clock)
-    {
+    private void cacheLocalDateTime(Clock clock) {
         this.now = LocalDateTime.now(clock);
     }
 }

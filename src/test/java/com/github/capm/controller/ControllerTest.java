@@ -1,25 +1,16 @@
 package com.github.capm.controller;
 
 import com.github.capm.compassapi.CompassApiApplication;
+import com.github.capm.entity.GrantedAuthority;
 import com.github.capm.entity.Greeting;
 import com.github.capm.entity.User;
-import com.github.capm.entity.GrantedAuthority;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.util.UriUtils;
-
-import java.net.URLEncoder;
-import java.time.Duration;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -45,8 +36,7 @@ class ControllerTest {
         ResponseEntity<Greeting> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/compass-api/greeting", Greeting.class)
-                ;
+                        .getForEntity("/compass-api/greeting", Greeting.class);
         Greeting greeting = response.getBody();
         assertNotNull(greeting);
         assertThat(greeting.getContent()).isEqualTo("Hello, World!");
@@ -58,8 +48,7 @@ class ControllerTest {
         ResponseEntity<User> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/users/" + USERNAME, User.class)
-                ;
+                        .getForEntity("/auth/users/" + USERNAME, User.class);
         User user = response.getBody();
         assertNotNull(user);
         assertThat(user.getUsername()).isEqualTo(USERNAME);
@@ -72,8 +61,7 @@ class ControllerTest {
         ResponseEntity<User> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/fake", User.class)
-                ;
+                        .getForEntity("/auth/fake", User.class);
         User user = response.getBody();
         assertNotNull(user);
         assertThat(user.getUsername()).isEqualTo("FAKE");
@@ -86,8 +74,7 @@ class ControllerTest {
         ResponseEntity<User[]> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/users", User[].class)
-                ;
+                        .getForEntity("/auth/users", User[].class);
         User[] users = response.getBody();
         assertNotNull(users);
         assertThat(users).isNotEmpty();
@@ -101,8 +88,7 @@ class ControllerTest {
         ResponseEntity<String[]> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/groups", String[].class)
-                ;
+                        .getForEntity("/auth/groups", String[].class);
         String[] groups = response.getBody();
         assertNotNull(groups);
         assertThat(groups).isNotEmpty();
@@ -117,8 +103,7 @@ class ControllerTest {
         ResponseEntity<String[]> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/groups/" + ADMINS + "/users", String[].class)
-                ;
+                        .getForEntity("/auth/groups/" + ADMINS + "/users", String[].class);
         String[] users = response.getBody();
         assertNotNull(users);
         assertThat(users).isNotEmpty();
@@ -131,8 +116,7 @@ class ControllerTest {
         ResponseEntity<GrantedAuthority[]> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/groups/" + ADMINS + "/authorities", GrantedAuthority[].class)
-                ;
+                        .getForEntity("/auth/groups/" + ADMINS + "/authorities", GrantedAuthority[].class);
         GrantedAuthority[] auths = response.getBody();
         assertNotNull(auths);
         assertThat(auths).isNotEmpty();
@@ -144,8 +128,7 @@ class ControllerTest {
         ResponseEntity<GrantedAuthority[]> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/groups/create/" + "AVENGERS:AVENGER", GrantedAuthority[].class)
-                ;
+                        .getForEntity("/auth/groups/create/" + "AVENGERS:AVENGER", GrantedAuthority[].class);
         GrantedAuthority[] auths = response.getBody();
         assertNotNull(auths);
         assertThat(auths).isNotEmpty();
@@ -159,8 +142,7 @@ class ControllerTest {
         ResponseEntity<User> response =
                 template
                         .withBasicAuth(USERNAME, PASSWORD)
-                        .getForEntity("/auth/users/create/" + "capman:testpass", User.class)
-                ;
+                        .getForEntity("/auth/users/create/" + "capman:testpass", User.class);
         User user = response.getBody();
         assertNotNull(user);
         assertThat(user.getUsername()).isEqualTo("capman");

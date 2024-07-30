@@ -5,12 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 import javax.sql.DataSource;
@@ -19,29 +21,99 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests()
-                .requestMatchers(
-                        new RegexRequestMatcher("/auth/*", null),
-                        new RegexRequestMatcher("/compass-api/*", null)
+                .securityContext().requireExplicitSave(false)
+                .and().sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                new RegexRequestMatcher("/greetings/.*", null)
                         ).permitAll()
-                .anyRequest().authenticated()
-                .and()
+                        .requestMatchers(
+                                new RegexRequestMatcher("/retrieve/.*", null)
+                        ).hasAnyRole("VIEWER", "EDITOR")
+                        .requestMatchers(
+                                new RegexRequestMatcher("/publish/.*", null)
+                        ).hasRole("EDITOR")
+                        .requestMatchers(
+                                new RegexRequestMatcher("/auth/.*", null)
+                        ).hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
                 .formLogin()
-                .permitAll()
                 .and()
-                .rememberMe()
+                .httpBasic()
                 .and()
-                .logout()
+                .logout(logout ->
+                        logout.invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID")
+                                .clearAuthentication(true));
+
 //                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .clearAuthentication(true)
-                .permitAll()
+        return http.build();
+    }
+
+    public SecurityFilterChain GAVfilterChain(HttpSecurity http) throws Exception {
+        http
+//                .regexMatcher("/greetings/*")
+//                .anonymous()
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                )
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                new RegexRequestMatcher("/greetings/.*", null),
+                                new RegexRequestMatcher("/retrieve/.*", null)
+                        ).hasAnyRole("VIEWER", "EDITOR")
+                        .requestMatchers(
+                                new RegexRequestMatcher("/publish/.*", null)
+                        ).hasRole("EDITOR")
+                        .requestMatchers(
+                                new RegexRequestMatcher("/auth/.*", null)
+                        ).hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )//                .requestMatchers(
+//                        new AntPathRequestMatcher("/greetings**", null)
+//                )
+//                .permitAll()
+//                .requestMatchers(
+//                        new AntPathRequestMatcher("/retrieve/**", null)
+//                )
+//                .hasAnyRole("VIEWER", "EDITOR")
+//                .requestMatchers(
+//                        new AntPathRequestMatcher("/publish/**", null)
+//                )
+//                .hasAnyRole("EDITOR")
+//                .requestMatchers(
+//                        new AntPathRequestMatcher("/**", null))
+//                .hasRole("ADMIN")
+//                .anyRequest()
+//                .authenticated()
+                //                .and()
+//                .rememberMe()
+                .httpBasic()
                 .and()
-                .httpBasic();
+                .exceptionHandling()
+                .accessDeniedPage("/403")
+                .and()
+                .formLogin((form) ->
+                        form
+                                .loginPage("/login")
+                                .permitAll()
+                )
+                .logout((logout) ->
+                        logout
+                                .permitAll()
+                                .logoutSuccessUrl("/login?logout")
+                                .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID")
+                                .clearAuthentication(true)
+                )
+        ;
 
         return http.build();
     }
